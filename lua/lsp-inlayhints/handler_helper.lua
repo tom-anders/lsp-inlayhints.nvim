@@ -99,40 +99,23 @@ local render_hints = function(bufnr, parsed, namespace, range)
   end
 
   for line, line_hints in pairs(parsed) do
-    local param_labels, type_labels = fill_labels(line_hints)
-
-    local param_vt = get_param_vt(param_labels)
-    local type_vt = get_type_vt(nil, type_labels)
-
-    local virt_text
-    if type_vt ~= "" then
-      if param_vt ~= "" then
-        virt_text = type_vt .. opts.labels_separator .. param_vt
+    for _, hint in ipairs(line_hints) do
+      local label = ""
+      if type(hint.label) == 'string' then
+        label = hint.label
       else
-        virt_text = type_vt
+        for _, l in ipairs(hint.label) do
+          label = label .. l.value
+        end
       end
-    else
-      virt_text = param_vt
-    end
-
-    local padding = ""
-    if opts.max_len_align then
-      padding = string.rep(
-        " ",
-        max_len - current_line(bufnr, line):len() + opts.max_len_align_padding
-      )
-    end
-
-    if virt_text ~= "" then
-      vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
-        virt_text = {
-          { padding, "NONE" },
-          { virt_text, opts.highlight },
-        },
+      vim.api.nvim_buf_set_extmark(bufnr, namespace, hint.position.line, hint.position.character, {
+        virt_text = { { label, config.options.inlay_hints.highlight } },
+        virt_text_pos = "inline",
         hl_mode = "combine",
         priority = opts.priority,
       })
     end
+
   end
 end
 
