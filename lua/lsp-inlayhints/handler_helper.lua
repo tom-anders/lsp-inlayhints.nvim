@@ -111,6 +111,7 @@ local render_hints = function(bufnr, parsed, namespace, range)
       vim.api.nvim_buf_set_extmark(bufnr, namespace, hint.position.line, hint.position.character, {
         virt_text = { { label, config.options.inlay_hints.highlight } },
         virt_text_pos = "inline",
+        right_gravity = false,
         hl_mode = "combine",
         priority = opts.priority,
       })
